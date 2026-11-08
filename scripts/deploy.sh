@@ -18,11 +18,12 @@ URL="$(git -C "$SRC" remote get-url origin)"
 started="$(date '+%Y-%m-%d %H:%M:%S')"
 
 echo "== checkout $TAG -> $APP"
-[ -d "$APP/.git" ] || git clone -q "$URL" "$APP"
+prev=none
+if [ -d "$APP/.git" ]; then prev="$(git -C "$APP" describe --tags --exact-match 2>/dev/null || echo untagged)"
+else git clone -q "$URL" "$APP"; fi
 git -C "$APP" fetch -q --tags --force origin
 git -C "$APP" rev-parse -q --verify "refs/tags/$TAG" >/dev/null || { echo "tag $TAG not on origin; push it first" >&2; exit 1; }
 [ -z "$(git -C "$APP" status --porcelain --untracked-files=no)" ] || { echo "$APP has local changes; refusing" >&2; exit 1; }
-prev="$(git -C "$APP" describe --tags --exact-match 2>/dev/null || echo none)"
 git -C "$APP" -c advice.detachedHead=false checkout -q "refs/tags/$TAG"
 
 # Project links are gitignored, so copy them from the working copy.
