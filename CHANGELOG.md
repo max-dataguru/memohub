@@ -6,6 +6,7 @@ change both databases.
 
 ## Unreleased
 
+- Logo (`docs/assets/logo.svg`) in the README and a social preview image.
 - Docs, client texts, comments and eval data describe devices and the backup host in generic
   terms (plugin 1.12.1, Codex plugin 1.0.7).
 - `docs/ARCHITECTURE.md`: parts, Supabase dependencies and the feature convention.
