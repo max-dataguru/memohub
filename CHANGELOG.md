@@ -6,6 +6,8 @@ change both databases.
 
 ## Unreleased
 
+- `deploy.sh` reports the previous version as `none` on the first deploy.
+
 ## v0.1.0 - 2026-11-08
 
 First public release.
