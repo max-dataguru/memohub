@@ -191,8 +191,10 @@ Its device key can only add thoughts. Setup: [SHORTCUT.md](SHORTCUT.md).
 **Health report.** `./scripts/install-health.sh` runs on Mondays and shows a notification only
 when something stopped being collected.
 
-**Meeting recording.** The separate `meeting` plugin for Claude Code records meeting audio and
-video and writes a transcript and summary; see that plugin's README. Transcripts land in
+**Meeting recording.** The separate [`meeting`](https://github.com/max-dataguru/meeting-notes)
+plugin for Claude Code records meeting audio and video and writes a transcript and summary; it is
+also listed in this repository's marketplace (`/plugin install meeting@memohub`), and its README
+covers setup. Transcripts land in
 `~/Documents/Meetings`, and the journal picks them up (the `meeting` source in `capture.conf`).
 On first run macOS asks for access to Documents.
 
@@ -201,6 +203,26 @@ ones that contain decisions and plans, and ask a model to propose notes: by defa
 `qwen3` in Ollama, or any OpenAI-compatible API with your own key. Proposals become candidates and turn into notes only after you approve them in any client ("show
 candidates"). Only sources you allow in `distill.allow` are read. Quality is measured on 20
 labelled chats before it is switched on.
+
+## Updating
+
+The launchd jobs should run from a release, not from a folder you edit. `scripts/deploy.sh`
+keeps a separate checkout in `~/.memohub/app`, switches it to a tag and reinstalls the jobs from
+there:
+
+```bash
+./scripts/deploy.sh v0.1.0             # stops if the release has unapplied migrations
+./scripts/deploy.sh v0.2.0 --migrate   # also applies them to both databases
+```
+
+If you keep your own public fork, enable the leak guard first (`git config core.hooksPath
+.githooks`, then add private strings to `~/.memohub/guard.deny`); see the
+README.
+
+It copies the Supabase links from the folder you run it in, loads the guide, reinstalls only the
+jobs you already have (the backup and health hours are kept) and checks that a scan ran. Read
+[CHANGELOG.md](../CHANGELOG.md) before updating. To roll back, deploy the previous tag;
+migrations are not rolled back.
 
 ## Security
 

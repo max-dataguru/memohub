@@ -9,6 +9,14 @@
       "name": "memohub",
       "source": "./plugin",
       "description": "Personal memory in Supabase: /tomemo saves a session, the skill searches past decisions."
+    },
+    {
+      "name": "meeting",
+      "source": {
+        "source": "github",
+        "repo": "max-dataguru/meeting-notes"
+      },
+      "description": "Record meetings on a Mac (Zoom, Teams, Meet, any app): audio, video, a Whisper transcript, slides and a summary."
     }
   ]
 }

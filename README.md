@@ -80,10 +80,24 @@ flowchart TB
   (hit@1, hit@5, MRR; thresholds are in the script).
 - `gitleaks git --redact .`: scans git history for secrets and project coordinates (rules in
   `.gitleaks.toml`). GitHub Actions runs all of the above on every push.
+- Leak guard: `git config core.hooksPath .githooks` once per clone. Before every commit and push,
+  `scripts/guard.sh` runs gitleaks, checks the added lines and commit messages against a local
+  deny list (values from the local config plus your own strings in `~/.memohub/guard.deny`), and
+  requires GitHub noreply commit emails. CI cannot see the deny list, so only the local hook
+  checks it before anything reaches GitHub.
 - Schema changes: `supabase migration new <name>`, tests green, then update `docs/CONTRACT.md`,
   `clients/` and `plugin/` together. `./scripts/db-push.sh` applies migrations to both live
   databases.
 - Project links (`supabase/.temp/`, `targets/private/supabase/.temp/`) are local and stay out of git.
+
+## Releases
+
+- Work goes through branches and pull requests; `main` is protected and merges only with green CI.
+- A release is a `vX.Y.Z` tag on `main` plus an entry in [CHANGELOG.md](CHANGELOG.md). A plugin
+  version is bumped in the same pull request that changes the plugin.
+- `./scripts/deploy.sh vX.Y.Z [--migrate]` deploys a tag to the Mac: checkout in `~/.memohub/app`,
+  migrations (only with `--migrate`), guide sync, launchd jobs, checks. See
+  [docs/INSTALL.md](docs/INSTALL.md#updating).
 
 ## File storage
 
