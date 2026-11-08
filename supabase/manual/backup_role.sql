@@ -1,4 +1,4 @@
--- Read-only role for the nightly pg_dump from the NAS. Run once in the Supabase
+-- Read-only role for the nightly pg_dump from a backup host. Run once in the Supabase
 -- SQL Editor, replacing the password placeholder there; never commit the real one.
 
 create role memohub_backup login password 'CHANGE-ME-IN-SQL-EDITOR';

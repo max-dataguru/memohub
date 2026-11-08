@@ -16,7 +16,7 @@ SQL.
 **Which database.** `medicine` and sensitive personal topics (legal cases, debts and money,
 documents, family, relatives' health) go to `memohub-private` (the `memohub-private` MCP server,
 same functions). Everything else goes to `memohub`. No `memohub-private` server in this session →
-do not save sensitive content; say it is saved from the home Mac.
+do not save sensitive content; say it is saved from a personal computer (`home-mac`).
 
 Write the note in the language of the conversation.
 
@@ -39,7 +39,7 @@ Write the note in the language of the conversation.
    - `chat_ref` = `cc-` + the value of `echo $CLAUDE_CODE_SESSION_ID` (so this session's notes are
      recognized a week later, and the session can be reopened with `claude --resume <id>`);
    - `source` = `claude-code`; `device` = the value of `echo $MEMOHUB_DEVICE` (`home-mac` /
-     `work-mac`); if it is empty, ask once which Mac this is and offer to set it in
+     `work-mac`); if it is empty, ask once which device this is and offer to set it in
      `~/.claude/settings.json` → `env`.
    - If `save` answered `same_chat` or `similar_exists`, in Claude Code **amend** by default:
      `memohub.get(id)`, one merged version, `supersedes` = id; ask only if it looks like a

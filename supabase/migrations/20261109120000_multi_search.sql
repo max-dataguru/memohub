@@ -1,7 +1,7 @@
 -- Multi-query search for clients without a query embedding (Claude on the phone, claude.ai,
--- ChatGPT, the work laptop): the client sends its question plus a few short reformulations, the
+-- ChatGPT, a work computer): the client sends its question plus a few short reformulations, the
 -- server searches each one and merges the lists. Live eval 07.11 on 19 real questions, blind
--- reformulations by another model: hit@5 0.58 -> 0.89, MRR 0.58 -> 0.77 (hybrid via the NAS:
+-- reformulations by another model: hit@5 0.58 -> 0.89, MRR 0.58 -> 0.77 (hybrid with local embeddings:
 -- 1.00 / 0.89).
 --
 -- Design:

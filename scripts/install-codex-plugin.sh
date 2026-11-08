@@ -10,7 +10,7 @@ fi
 device="${2:-${MEMOHUB_DEVICE:-}}"
 private_ref="${3:-${MEMOHUB_PRIVATE_REF:-}}"
 if [[ -z "$device" ]]; then
-  read -r -p "Which Mac is this? [home-mac/work-mac]: " device
+  read -r -p "Which device is this? [home-mac/work-mac]: " device
 fi
 if [[ "$device" != "home-mac" && "$device" != "work-mac" ]]; then
   echo "Device must be home-mac or work-mac." >&2

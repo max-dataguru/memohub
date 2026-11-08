@@ -19,7 +19,7 @@ Work through the `execute_sql` MCP tool (only `memohub.*` functions) and the Sup
 2. **Which database.** Medical and sensitive personal files (legal cases, debts, money,
    documents, family) go to `memohub-private` (the `memohub-private` MCP, ref
    `$MEMOHUB_PRIVATE_REF`); everything else to `memohub` (`$MEMOHUB_REF`). No access to
-   `memohub-private` in this session → do not upload; say it is done from the home Mac.
+   `memohub-private` in this session → do not upload; say it is done from a personal computer (`home-mac`).
 3. **File facts** (Bash): size `stat -f %z`, `shasum -a 256`, type `file -b --mime-type`.
 4. **Space check, before uploading:** `select memohub.check_upload(<size>, '<sha256>')`.
    - `duplicate` → the file is already there: do not upload; attach the existing one (or just say

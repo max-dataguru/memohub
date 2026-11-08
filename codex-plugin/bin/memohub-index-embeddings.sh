@@ -6,7 +6,7 @@ set -euo pipefail
 
 model="${MEMOHUB_EMBEDDING_MODEL:-embeddinggemma-2:270m}"
 ollama_url="${MEMOHUB_OLLAMA_URL:-$(cat "$HOME/.memohub/ollama.url" 2>/dev/null)}"
-[[ -n "$ollama_url" ]] || { echo "set MEMOHUB_OLLAMA_URL or ~/.memohub/ollama.url (e.g. http://<nas>:11434)" >&2; exit 2; }
+[[ -n "$ollama_url" ]] || { echo "set MEMOHUB_OLLAMA_URL or ~/.memohub/ollama.url (e.g. http://localhost:11434)" >&2; exit 2; }
 limit=0
 
 usage() {
