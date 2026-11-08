@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Leak guard on everything about to be pushed (branches and tags) that the remote does not have.
+set -euo pipefail
+guard="$(git rev-parse --show-toplevel)/scripts/guard.sh"
+zero=0000000000000000000000000000000000000000
+while read -r _lref lsha _rref rsha; do
+  [ "$lsha" = "$zero" ] && continue                       # branch deletion
+  if [ "$rsha" = "$zero" ]; then range="$lsha --not --remotes"
+  else range="$rsha..$lsha"; fi
+  # shellcheck disable=SC2086
+  [ -z "$(git rev-list $range | head -1)" ] && continue
+  "$guard" $range
+done

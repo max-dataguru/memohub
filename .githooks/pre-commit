@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Leak guard on the staged diff. Enable once per clone: git config core.hooksPath .githooks
+exec "$(git rev-parse --show-toplevel)/scripts/guard.sh" --staged
