@@ -1,8 +1,8 @@
 -- A1 capture journal: raw user/assistant messages and meeting transcript pieces, captured by a
--- trusted scanner on the owner's Mac (scripts/capture.py) and sent in batches. Append-only:
+-- trusted scanner on the owner's computer (scripts/capture.py) and sent in batches. Append-only:
 -- rows change only through suppress_chat / forget_chat. Nothing here writes to notes.
 --
--- * Routing is decided by the scanner (home Mac -> private DB, work laptop -> shared DB, only
+-- * Routing is decided by the scanner (personal computer -> private DB, work computer -> shared DB, only
 --   listed projects and #memo chats); the database does not classify content.
 -- * Masking happens twice: in the scanner before sending and again here (_mask_sensitive), so
 --   the database stores masked text only.

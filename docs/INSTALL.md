@@ -14,7 +14,7 @@ simpler.
 - A Supabase account on the free tier.
 - A Mac with Homebrew. Background jobs run under launchd; there is no Linux or Windows support.
 - Optional: Docker for the tests, `age` and `libpq` (`psql`) for backups,
-  [Ollama](https://ollama.com) for semantic search, a NAS or another disk for backup copies.
+  [Ollama](https://ollama.com) for semantic search, another host or disk for backup copies.
   All of them install with `brew install`.
 
 The basic setup needs no paid subscriptions or API keys: Claude and ChatGPT reach the database
@@ -42,7 +42,7 @@ Only the database is required. Everything else can be turned on separately.
 
 **Today:** two databases with one schema on Supabase free tier. The shared one holds work,
 learning and travel; the private one holds medical, money, documents and family. Connect the
-private database only to your home devices. A work laptop and a company Claude account see only
+private database only to your personal devices. A work computer and a company Claude account see only
 the shared one. `db-push.sh` and `sync-guide.sh` do not support a single-database setup yet.
 
 Models (embeddings now, distillation later) run in Ollama by default, so note text does not leave
@@ -116,7 +116,7 @@ decide about …".
 
 ### A second device with the shared database only
 
-For a work laptop: install the Claude Code plugin the same way and run `/memohub-setup work-mac`.
+For a work computer: install the Claude Code plugin the same way and run `/memohub-setup work-mac`.
 It installs the Supabase CLI if needed, asks you to run `supabase login` once, finds the shared
 project and writes the variables. It never connects the private database. Restart the session,
 then `/mcp` → `plugin:memohub:memohub` → Authenticate. Sign-in without a browser
@@ -139,7 +139,7 @@ EOF
 ./scripts/install-capture.sh
 ```
 
-On a work laptop use `TARGET=shared`, `MODE=projects` and a `PROJECTS` list: only those projects
+On a work computer use `TARGET=shared`, `MODE=projects` and a `PROJECTS` list: only those projects
 and chats tagged `#memo` reach the shared database. Log: `~/.memohub/capture.log`.
 
 **Backup.** Daily; a run missed while the Mac slept starts after wake. Copies are encrypted with a
@@ -162,11 +162,11 @@ key only you hold.
    PRIVATE_HOST=<private pooler host>
    PRIVATE_REF=<private ref>
    ```
-   Optional NAS copy: `NAS_SSH` and `NAS_DIR`.
+   Optional copy to another host over SSH: `NAS_SSH` and `NAS_DIR`.
 4. `./scripts/install-mac-backup.sh`. Check the next day: `~/.memohub/backup.log` has
    `ok shared …` and `ok private …` lines and `~/.memohub/backups/` has `.age` files.
 
-Copies are kept for 30 days in `~/.memohub/backups/` and on the NAS, if configured. To restore:
+Copies are kept for 30 days by default in `~/.memohub/backups/` and on the backup host, if configured. To restore:
 apply migrations to an empty database, then
 `backup/memohub-restore.sh <file.age> <connection string>`.
 

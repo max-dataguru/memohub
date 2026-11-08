@@ -1,5 +1,5 @@
 -- Search fallback chain: all terms -> any term -> substring.
--- Models often pass a whole question ("почему не открываем NAS в интернет"); requiring
+-- Models often pass a whole question ("почему выбрали SQS, а не Kafka"); requiring
 -- every word made such queries return nothing. Any-term matches are ranked by ts_rank,
 -- so notes sharing more terms come first.
 

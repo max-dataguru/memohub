@@ -1,7 +1,7 @@
 {
  "notes": [
-  {"key": "nas-internet", "space": "personal", "title": "NAS не открываем в интернет", "body_md": "Решили не пробрасывать порты TrueNAS наружу. Доступ только через Tailscale, бэкапы уходят в B2 через Cloud Sync.", "tags": ["nas", "security"]},
-  {"key": "backup-retention", "space": "personal", "title": "Срок хранения бэкапов memohub — 30 дней", "body_md": "Мак и NAS хранят 30 дней, в B2 правило lifecycle удаляет скрытые версии через сутки.", "tags": ["backup"]},
+  {"key": "piano-lessons", "space": "personal", "title": "Уроки фортепиано не бросаем до лета", "body_md": "Решили не переносить занятия на выходные. Преподаватель приходит по четвергам, дома цифровое пианино Yamaha P-125.", "tags": ["music"]},
+  {"key": "receipts-retention", "space": "personal", "title": "Срок хранения чеков на технику — три года", "body_md": "Сканы чеков лежат в папке с документами, оригиналы в коробке; гарантийные талоны выбрасываем после окончания гарантии.", "tags": ["documents"]},
   {"key": "supabase-choice", "space": "work", "title": "Second brain живёт в Supabase", "body_md": "Выбирали между Notion и Supabase. Supabase — потому что сразу Postgres, RLS и функции.", "tags": ["memory", "supabase"]},
   {"key": "lisbon-trip", "space": "travel", "title": "Поездка в Лиссабон в марте", "body_md": "Перелёт TAP, отель в Алфаме, три дня. Обязательно Синтра и пастел-де-ната в Белене.", "tags": ["travel"]},
   {"key": "visa-japan", "space": "travel", "title": "Виза в Японию: документы", "body_md": "Нужны справка с работы, выписка за три месяца и бронь отеля. Подавать за месяц.", "tags": ["visa"]},
@@ -18,14 +18,14 @@
   {"key": "english-course", "space": "learning", "title": "Курс английского: speaking club по средам", "body_md": "Записался в speaking club, встречи по средам в 19:00, тема месяца — переговоры.", "tags": ["english"]},
   {"key": "tax-return", "space": "personal", "title": "Налоговый вычет за обучение", "body_md": "Подать декларацию 3-НДФЛ до 30 апреля, приложить договор с университетом и чеки.", "tags": ["taxes"]},
   {"key": "postgres-index", "space": "work", "title": "Медленный запрос по заказам: нужен составной индекс", "body_md": "Запрос по customer_id и created_at делал seq scan. Добавили индекс (customer_id, created_at desc), стало 40 мс.", "tags": ["postgres"]},
-  {"key": "embeddings-local", "space": "work", "title": "Embeddings считаем локально на NAS через Ollama", "body_md": "Модель embeddinggemma 768 измерений, текст заметок не уходит из домашней сети.", "tags": ["embeddings"]},
+  {"key": "embeddings-local", "space": "work", "title": "Embeddings считаем локально через Ollama", "body_md": "Модель embeddinggemma 768 измерений, текст заметок не уходит во внешние API.", "tags": ["embeddings"]},
   {"key": "gift-ideas", "space": "personal", "title": "Идеи подарков на день рождения мамы", "body_md": "Сертификат в спа, книга по садоводству, поездка на выходные за город.", "tags": ["family"]}
  ],
  "queries": [
-  {"q": "NAS интернет", "expect": "nas-internet"},
-  {"q": "Tailscale", "expect": "nas-internet"},
-  {"q": "сколько хранятся бэкапы", "expect": "backup-retention"},
-  {"q": "lifecycle B2", "expect": "backup-retention"},
+  {"q": "фортепиано лето", "expect": "piano-lessons"},
+  {"q": "Yamaha", "expect": "piano-lessons"},
+  {"q": "сколько хранятся чеки", "expect": "receipts-retention"},
+  {"q": "гарантийные талоны", "expect": "receipts-retention"},
   {"q": "почему Supabase а не Notion", "expect": "supabase-choice"},
   {"q": "Лиссабон", "expect": "lisbon-trip"},
   {"q": "отель в Алфаме", "expect": "lisbon-trip"},
@@ -54,15 +54,15 @@
   {"q": "пастел-де-ната", "expect": "lisbon-trip"}
  ],
  "similar": [
-  {"existing": "nas-internet", "title": "NAS не открываем в интернет: итог", "expect": true},
-  {"existing": "backup-retention", "title": "Срок хранения бэкапов memohub", "expect": true},
+  {"existing": "piano-lessons", "title": "Уроки фортепиано не бросаем до лета: итог", "expect": true},
+  {"existing": "receipts-retention", "title": "Срок хранения чеков на технику", "expect": true},
   {"existing": "lisbon-trip", "title": "Поездка в Лиссабон в марте 2027", "expect": true},
   {"existing": "lisbon-trip", "title": "Поездка в Порту летом", "expect": false},
   {"existing": "airflow-retries", "title": "Airflow: новый DAG для биллинга", "expect": false},
   {"existing": "running-plan", "title": "План чтения на осень", "expect": false}
  ],
  "multi": [
-  {"q": "как не потерять доступ к домашнему серверу снаружи", "also": ["Tailscale", "проброс портов", "NAS"], "expect": "nas-internet"},
+  {"q": "как не забросить музыку", "also": ["фортепиано", "уроки", "пианино"], "expect": "piano-lessons"},
   {"q": "отпуск в Португалии", "also": ["Лиссабон", "Portugal", "Синтра"], "expect": "lisbon-trip"},
   {"q": "задача падает по таймауту", "also": ["ретраи", "retries", "таймаут"], "expect": "airflow-retries"},
   {"q": "какой брокер сообщений взять", "also": ["Kafka", "SQS", "очередь событий"], "expect": "kafka-vs-sqs"},

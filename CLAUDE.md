@@ -6,7 +6,7 @@ reading rules: docs/CONTRACT.md (the source of truth for the texts in clients/ a
 - Everything in the repository is in English: docs, client texts, code comments, commit messages.
 - The repository is public. `.githooks/` (leak guard, `scripts/guard.sh`) must stay enabled; never
   bypass it with `--no-verify`. If it blocks, fix the content.
-- No coordinates in commits: `project_ref`, passwords, connection strings, NAS paths go in
+- No coordinates in commits: `project_ref`, passwords, connection strings, server paths go in
   placeholders or env. Never print secrets.
 - Two databases with one schema: `memohub` (shared) and `memohub-private` (`targets/private`).
   The schema changes only through a new migration in `supabase/migrations/` with

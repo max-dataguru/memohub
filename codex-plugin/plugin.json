@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "memohub",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Memohub personal memory: find past decisions and save session summaries.",
   "author": {
     "name": "max-dataguru"

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Daily encrypted memohub backup from a Mac (launchd). Used where the NAS cannot pull from
+# Daily encrypted memohub backup from a Mac (launchd). Used where the backup host cannot pull from
 # Supabase itself. Each run also wakes a paused-prone free-tier project.
 #
 # Config: ~/.memohub/backup.conf (not in the repo):
 #   TARGETS="shared private"            which databases
 #   <T>_HOST=<pooler host>  <T>_REF=<project ref>   per target, T upper-cased
-#   NAS_SSH=<ssh host>  NAS_DIR=<dir>   optional: copy new files to the NAS when reachable;
+#   NAS_SSH=<ssh host>  NAS_DIR=<dir>   optional: copy new files to a backup host when reachable;
 #                                       copies there older than KEEP_DAYS are deleted too
 # Before the backup, embeddings are filled in for new notes (codex-plugin indexer, local Ollama
 # from MEMOHUB_OLLAMA_URL or ~/.memohub/ollama.url); skipped if Ollama is unreachable, never fatal.
@@ -60,7 +60,7 @@ for t in ${TARGETS:-shared private}; do
   find "$OUT/$t" -name 'memohub-*.gz.age' -mtime +"$KEEP_DAYS" -delete
 done
 
-# Copy to the NAS only over a direct connection (e.g. home LAN); skip silently otherwise.
+# Copy to the backup host only when it answers over SSH; skip silently otherwise.
 if [ -n "${NAS_SSH:-}" ] && ssh -o BatchMode=yes -o ConnectTimeout=5 "$NAS_SSH" true 2>/dev/null; then
   for t in ${TARGETS:-shared private}; do
     have="$(ssh -o BatchMode=yes "$NAS_SSH" "sudo ls $NAS_DIR/$t" 2>/dev/null || true)"
@@ -72,7 +72,7 @@ if [ -n "${NAS_SSH:-}" ] && ssh -o BatchMode=yes -o ConnectTimeout=5 "$NAS_SSH" 
         && ssh -o BatchMode=yes "$NAS_SSH" "sudo install -m 600 -o root -g root /tmp/$b $NAS_DIR/$t/$b && rm -f /tmp/$b" \
         && echo "nas  $t $b"
     done
-    # Same retention as here: after KEEP_DAYS a forgotten note is gone from the NAS copies too.
+    # Same retention as here: after KEEP_DAYS a forgotten note is gone from the backup host too.
     gone="$(ssh -o BatchMode=yes "$NAS_SSH" \
       "sudo find $NAS_DIR/$t -maxdepth 1 -name 'memohub-*.json.gz.age' -mtime +$KEEP_DAYS -print -delete | wc -l" 2>/dev/null || echo '?')"
     echo "nas  $t expired $(echo $gone)"

@@ -17,7 +17,7 @@ moves only after that, and spool items leave only when the database acknowledges
 
 Config: ~/.memohub/capture.conf (KEY=VALUE):
     DEVICE=home-mac                 required
-    TARGET=private                  private (home Mac) | shared (work laptop)
+    TARGET=private                  private (personal computer) | shared (work computer)
     MODE=all                        all | projects (only PROJECTS and chats with #memo)
     PROJECTS=agent_platform,airflow_etl
     SOURCES=claude-code,codex,meeting

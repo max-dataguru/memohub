@@ -20,14 +20,14 @@ flowchart TB
     private[("memohub-private<br/>sensitive")]
   end
 
-  subgraph mac["Home Mac, launchd jobs"]
+  subgraph mac["Personal computer, launchd jobs"]
     direction LR
     capture["capture.py<br/>chat journal"]
     ollama["Ollama<br/>embeddings"]
     backup["mac-backup.sh<br/>daily backup"]
   end
 
-  nas["NAS and cloud storage<br/>encrypted copies"]
+  nas["Backup host<br/>encrypted copies"]
 
   clients --> mcp --> db
   capture --> private
@@ -56,7 +56,7 @@ flowchart TB
   phone and ChatGPT included.
 - **Semantic search (optional).** A local Ollama with `embeddinggemma-2:270m` computes note vectors
   (`memohub-index-embeddings.sh`); `memohub-hybrid-search.sh '<query>'` combines vector and
-  full-text search. Note text never leaves the home network. Without Ollama the script falls back
+  full-text search. Note text stays on your machines. Without Ollama the script falls back
   to `multi_search`.
 - **Files** (PDF, ZIP, documents) go to a private `files` bucket in the same database as the note.
   `check_upload` checks space and duplicates first; text extracted from a file is searchable.
@@ -65,8 +65,8 @@ flowchart TB
   version, file, embedding and graph link and keeps a contentless tombstone, so an older backup
   cannot bring the note back. Claude Code command: `/memoforget`.
 - **Chat journal:** `scripts/capture.py` collects raw messages from Claude Code, Codex and meeting
-  transcripts every 10 minutes (launchd), masks secrets and honours `#nomemo`. The home Mac writes
-  to the private database; a work laptop sends only selected projects and chats tagged `#memo` to
+  transcripts every 10 minutes (launchd), masks secrets and honours `#nomemo`. A personal computer writes
+  to the private database; a work computer sends only selected projects and chats tagged `#memo` to
   the shared one. Search: `memohub.search_captures`.
 - **Candidates:** automation may propose notes from the journal; a note is created only when a
   person approves it.

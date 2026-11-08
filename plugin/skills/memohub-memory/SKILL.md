@@ -38,8 +38,8 @@ Rules:
 - Search is by words: a note is found when it has every word of the query. Rephrasings: 1–3
   meaningful words; do not mix Russian and English in one variant (one of the three may be
   English); the most specific thing (a name, a product, a topic) and its synonyms; drop generic
-  words. Example: «почему не открываем NAS в интернет» → `NAS интернет`, `Tailscale`,
-  `проброс портов`.
+  words. Example: «почему выбрали SQS, а не Kafka» → `SQS Kafka`, `очередь событий`,
+  `message broker`.
 - A note's `matched_queries` shows which phrasings found it (0 is the question); `queries` gives
   each one's mode and hit count. Found by a single weak one (`fulltext_any`, `substring`): check it
   is the right note.

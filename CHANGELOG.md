@@ -6,6 +6,8 @@ change both databases.
 
 ## Unreleased
 
+- Docs, client texts, comments and eval data describe devices and the backup host in generic
+  terms (plugin 1.12.1, Codex plugin 1.0.7).
 - `docs/ARCHITECTURE.md`: parts, Supabase dependencies and the feature convention.
 - ROADMAP: local embeddings, releases and the architecture note moved to Done.
 - `deploy.sh` reports the previous version as `none` on the first deploy.

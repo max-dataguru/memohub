@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Nightly encrypted backup of memohub data from Supabase (TrueNAS cron job).
+# Nightly encrypted backup of memohub data from Supabase (cron job on a backup host).
 # The daily connection also keeps a free-tier project from pausing.
 # Run once per project (memohub, memohub-private) with its own env file and directory.
 #
@@ -8,8 +8,8 @@
 #
 #   MEMOHUB_BACKUP_ENV        env file with PGHOST, PGPORT, PGUSER, PGDATABASE,
 #                             PGPASSWORD, PGSSLMODE (KEY=value, no quotes), chmod 600
-#   MEMOHUB_BACKUP_DIR        target directory on a ZFS dataset
-#   MEMOHUB_BACKUP_RECIPIENT  age public key (age1...); the private key never lives on the NAS
+#   MEMOHUB_BACKUP_DIR        target directory
+#   MEMOHUB_BACKUP_RECIPIENT  age public key (age1...); the private key never lives on the backup host
 #   MEMOHUB_BACKUP_KEEP_DAYS  retention, default 30
 #   MEMOHUB_PG_IMAGE          image with psql, default postgres:17-alpine
 set -euo pipefail
@@ -27,7 +27,7 @@ trap 'rm -f "$tmp"' EXIT
 
 EXPORT_SQL="$(grep -v '^--' "$(dirname "$0")/export.sql")"
 
-# Export, sanity-check and encrypt inside the container: plaintext never touches the NAS disk.
+# Export, sanity-check and encrypt inside the container: plaintext never touches the backup host's disk.
 # `timeout` (Linux; absent on macOS) guards against a hung connection; --init lets signals reach psql.
 TO=""; command -v timeout >/dev/null && TO="timeout 300"
 $TO docker run --rm --init --network "${MEMOHUB_BACKUP_NETWORK:-bridge}" \

@@ -6,7 +6,7 @@ argument-hint: "[work-mac | home-mac]"
 Set up memohub on this computer. Argument: $ARGUMENTS
 
 1. **Device.** `work-mac` or `home-mac`, from the argument or `$MEMOHUB_DEVICE`; if neither, ask.
-   A work laptop is `work-mac`.
+   A work computer is `work-mac`.
 2. **Supabase CLI** (needed for `/memofile` and for finding projects): `supabase --version`.
    Missing: offer `brew install supabase/tap/supabase` and install after a "yes".
    Then `supabase projects list -o json`. On an auth error, ask the user to run
@@ -21,7 +21,7 @@ Set up memohub on this computer. Argument: $ARGUMENTS
    If yes: copy `${CLAUDE_PLUGIN_ROOT}/bin/memohub-auth-header.sh` to `~/.claude/bin/`
    (`chmod +x`) and add `MEMOHUB_CLI_LOGIN=1` to env. The connectors then use the token that
    `supabase login` keeps in Keychain, and `/mcp` → Authenticate is no longer needed. The token
-   grants access to the whole Supabase account, so do not turn this on by default on a work laptop.
+   grants access to the whole Supabase account, so do not turn this on by default on a work computer.
 6. **Private database (`home-mac` only):** if there is no `memohub-private` server yet,
    `claude mcp add-json --scope user memohub-private '{"type":"http","url":"https://mcp.supabase.com/mcp?project_ref=<private ref>&features=database","headersHelper":"~/.claude/bin/memohub-auth-header.sh"}'`
    (absolute path to the helper; without step 5, drop `headersHelper`).
