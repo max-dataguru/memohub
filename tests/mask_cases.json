@@ -1,0 +1,156 @@
+[
+ {
+  "name": "card",
+  "in": "карта 4111 1111 1111 1111, срок 12/29",
+  "out": "карта [masked:card_number], срок 12/29",
+  "kinds": [
+   "card_number"
+  ]
+ },
+ {
+  "name": "not a card",
+  "in": "заказ 1234567890123 от 2026110712345",
+  "out": "заказ 1234567890123 от 2026110712345",
+  "kinds": []
+ },
+ {
+  "name": "iban",
+  "in": "IBAN DE89 3704 0044 0532 0130 00 для оплаты",
+  "out": "IBAN [masked:iban] для оплаты",
+  "kinds": [
+   "iban"
+  ]
+ },
+ {
+  "name": "passport",
+  "in": "Паспорт серия 45 12 номер 345678",
+  "out": "Паспорт серия 45 12 номер 345678",
+  "kinds": []
+ },
+ {
+  "name": "passport compact",
+  "in": "паспорт: 4512 345678",
+  "out": "паспорт: [masked:passport_number]",
+  "kinds": [
+   "passport_number"
+  ]
+ },
+ {
+  "name": "snils",
+  "in": "СНИЛС 112-233-445 95",
+  "out": "СНИЛС [masked:snils]",
+  "kinds": [
+   "snils"
+  ]
+ },
+ {
+  "name": "api key",
+  "in": "export KEY=sk-abcdefghijklmnopqrstuvwxyz1234 && run",
+  "out": "export KEY=[masked:credential] && run",
+  "kinds": [
+   "credential"
+  ]
+ },
+ {
+  "name": "github token",
+  "in": "token ghp_abcdefghijklmnopqrstuvwxyz0123456789",
+  "out": "token [masked:credential]",
+  "kinds": [
+   "credential"
+  ]
+ },
+ {
+  "name": "url with password",
+  "in": "psql postgres://admin:s3cretpass@db.example.com:5432/app",
+  "out": "psql postgres://[masked:credential]@db.example.com:5432/app",
+  "kinds": [
+   "credential"
+  ]
+ },
+ {
+  "name": "password field",
+  "in": "Пароль: hunter2xyz, логин max",
+  "out": "Пароль: [masked:credential] логин max",
+  "kinds": [
+   "credential"
+  ]
+ },
+ {
+  "name": "jwt",
+  "in": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N_XgL0n3I9PlFUP0THsR8U",
+  "out": "Bearer [masked:credential]",
+  "kinds": [
+   "credential"
+  ]
+ },
+ {
+  "name": "private key",
+  "in": "key:\n-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAA\nAAAABG5vbmU=\n-----END OPENSSH PRIVATE KEY-----\ndone",
+  "out": "key:\n[masked:credential]\ndone",
+  "kinds": [
+   "credential"
+  ]
+ },
+ {
+  "name": "plain text",
+  "in": "Обсудили миграцию 0.4 и политики Storage",
+  "out": "Обсудили миграцию 0.4 и политики Storage",
+  "kinds": []
+ },
+ {
+  "name": "migration version (Luhn-valid)",
+  "in": "миграция 20261108130000_captures.sql применена",
+  "out": "миграция 20261108130000_captures.sql применена",
+  "kinds": []
+ },
+ {
+  "name": "shortcut id (Luhn-valid)",
+  "in": "мысль thought-iphone-sc-20261107190113295-3682",
+  "out": "мысль thought-iphone-sc-20261107190113295-3682",
+  "kinds": []
+ },
+ {
+  "name": "card with dashes",
+  "in": "оплата 4111-1111-1111-1111 прошла",
+  "out": "оплата [masked:card_number] прошла",
+  "kinds": [
+   "card_number"
+  ]
+ },
+ {
+  "name": "card, 14 digits not a date",
+  "in": "Diners 3056 9309 0259 04",
+  "out": "Diners [masked:card_number]",
+  "kinds": [
+   "card_number"
+  ]
+ },
+ {
+  "name": "uuid and git sha",
+  "in": "note 72a1a4ff-0941-4d12-9749-e521fae8595d, commit 69e078d3a1b2",
+  "out": "note 72a1a4ff-0941-4d12-9749-e521fae8595d, commit 69e078d3a1b2",
+  "kinds": []
+ },
+ {
+  "name": "phone number",
+  "in": "позвонить +7 916 123-45-67",
+  "out": "позвонить +7 916 123-45-67",
+  "kinds": []
+ },
+ {
+  "name": "aws example key",
+  "in": "AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE",
+  "out": "AWS_ACCESS_KEY_ID=[masked:credential]",
+  "kinds": [
+   "credential"
+  ]
+ },
+ {
+  "name": "supabase token",
+  "in": "SUPABASE_ACCESS_TOKEN=sbp_{{HEX40}}",
+  "out": "SUPABASE_ACCESS_TOKEN=[masked:credential]",
+  "kinds": [
+   "credential"
+  ]
+ }
+]

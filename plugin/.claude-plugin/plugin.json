@@ -1,0 +1,8 @@
+{
+  "name": "memohub",
+  "version": "1.12.0",
+  "description": "Personal memory in Supabase: /tomemo saves a session, the skill searches past decisions.",
+  "author": {
+    "name": "max-dataguru"
+  }
+}

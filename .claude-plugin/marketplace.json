@@ -1,0 +1,14 @@
+{
+  "name": "memohub",
+  "description": "Personal second brain: memory across Claude, ChatGPT and Codex.",
+  "owner": {
+    "name": "max-dataguru"
+  },
+  "plugins": [
+    {
+      "name": "memohub",
+      "source": "./plugin",
+      "description": "Personal memory in Supabase: /tomemo saves a session, the skill searches past decisions."
+    }
+  ]
+}

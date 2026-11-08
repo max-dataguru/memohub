@@ -1,0 +1,6 @@
+*.env
+.env*
+backups/
+*.sql.gz
+.DS_Store
+__pycache__/

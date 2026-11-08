@@ -1,0 +1,37 @@
+# Secret scan (CI step "Secret scan", locally: gitleaks git --redact .).
+# Default gitleaks rules plus the coordinates this repo must never contain (CLAUDE.md): project
+# refs, tailnet addresses, NAS paths. Fake values for the masking tests live in mask_cases.json.
+
+title = "memohub"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "supabase-project-url"
+description = "Supabase project URL or host with a real project ref"
+regex = '''\b(?:db\.)?[a-z]{20}\.supabase\.(?:co|com|in)\b'''
+
+[[rules]]
+id = "supabase-pooler-user"
+description = "Pooler user with a project ref (postgres.<ref>)"
+regex = '''\bpostgres\.[a-z]{20}\b'''
+
+[[rules]]
+id = "tailnet-host"
+description = "Tailscale MagicDNS host"
+regex = '''\b[a-z0-9-]+\.[a-z0-9-]+\.ts\.net\b'''
+
+[[rules]]
+id = "tailnet-ip"
+description = "Tailscale address (100.64.0.0/10)"
+regex = '''\b100\.(?:6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\.[0-9]{1,3}\.[0-9]{1,3}\b'''
+
+[[rules]]
+id = "nas-path"
+description = "Synology volume path"
+regex = '''/volume[0-9]+/[A-Za-z0-9_.-]+'''
+
+[[allowlists]]
+description = "Fake credentials the masking tests must catch"
+paths = ['''^tests/mask_cases\.json$''']
