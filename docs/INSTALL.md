@@ -191,8 +191,10 @@ Its device key can only add thoughts. Setup: [SHORTCUT.md](SHORTCUT.md).
 **Health report.** `./scripts/install-health.sh` runs on Mondays and shows a notification only
 when something stopped being collected.
 
-**Meeting recording.** The separate `meeting` plugin for Claude Code records meeting audio and
-video and writes a transcript and summary; see that plugin's README. Transcripts land in
+**Meeting recording.** The separate [`meeting`](https://github.com/max-dataguru/meeting-notes)
+plugin for Claude Code records meeting audio and video and writes a transcript and summary; it is
+also listed in this repository's marketplace (`/plugin install meeting@memohub`), and its README
+covers setup. Transcripts land in
 `~/Documents/Meetings`, and the journal picks them up (the `meeting` source in `capture.conf`).
 On first run macOS asks for access to Documents.
 
