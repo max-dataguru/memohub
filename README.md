@@ -1,3 +1,5 @@
+<img src="docs/assets/logo.svg" width="80" alt="memohub">
+
 # memohub
 
 Personal memory for AI chats. Summaries and decisions from Claude (web, iPhone, iPad, Desktop,
