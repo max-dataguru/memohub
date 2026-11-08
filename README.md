@@ -108,7 +108,7 @@ flowchart TB
 
 ## Roadmap
 
-[docs/ROADMAP.md](docs/ROADMAP.md).
+[docs/ROADMAP.md](docs/ROADMAP.md). How the parts fit together: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## License
 

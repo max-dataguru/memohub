@@ -16,17 +16,16 @@
 - Weekly health report.
 - Note candidates: automation can propose notes; only a person turns them into notes.
 - Tests in CI: migrations and smoke test, backup round trip, search eval, scanner, secret scan.
+- Local embeddings on the Mac with Ollama, no separate server.
+- Releases: tags, a changelog, a deploy script and a leak guard on every commit and push.
+- [Architecture note](ARCHITECTURE.md): parts, Supabase dependencies, the feature convention.
 
 ## Next
 
-1. **Local embeddings on the Mac** instead of a separate server.
-2. **Distillation.** Rules select journal chats with decisions and plans; a model proposes
+1. **Distillation.** Rules select journal chats with decisions and plans; a model proposes
    candidates (local Ollama by default, or any OpenAI-compatible API with your own key); you
    approve them. Measured on 20 labelled chats before it is switched on, then enabled per source.
-3. **Architecture note.** Component boundaries, which parts depend on Supabase, and one convention
-   for features (config prefix in `memohub.config`, state in `~/.memohub/<feature>/`, a log, pause
-   after three failures in a row).
-4. **Self-hosted private database.** Run the private database on plain Postgres in Docker; the
+2. **Self-hosted private database.** Run the private database on plain Postgres in Docker; the
    shared one stays on Supabase for phone and web clients.
 
 ## Principles

@@ -6,6 +6,8 @@ change both databases.
 
 ## Unreleased
 
+- `docs/ARCHITECTURE.md`: parts, Supabase dependencies and the feature convention.
+- ROADMAP: local embeddings, releases and the architecture note moved to Done.
 - `deploy.sh` reports the previous version as `none` on the first deploy.
 
 ## v0.1.0 - 2026-11-08
