@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">
   <rect width="1280" height="640" fill="#F6F8FA"/>
-  <g transform="translate(190 215) scale(6.25)">
+  <g transform="translate(132.5 213) scale(6.5)">
     <path d="M4 26V13l6-6 6 6v13M16 13l6-6 6 6v13" fill="none" stroke="#4A7FD6" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
     <g fill="#4A7FD6"><circle cx="4" cy="26" r="3"/><circle cx="16" cy="26" r="3"/><circle cx="28" cy="26" r="3"/><circle cx="10" cy="7" r="3"/><circle cx="22" cy="7" r="3"/></g>
   </g>
   <g font-family="-apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif">
-    <text x="460" y="330" font-size="120" font-weight="700" fill="#1F2328">memohub</text>
-    <text x="464" y="400" font-size="36" fill="#59636E">Personal memory for AI chats on Postgres</text>
+    <text x="399" y="336" font-size="150" font-weight="700" fill="#1F2328">memohub</text>
+    <text x="404" y="406" font-size="32" fill="#59636E">Personal memory for AI chats, in your own Postgres</text>
   </g>
 </svg>
