@@ -6,6 +6,12 @@ change both databases.
 
 ## Unreleased
 
+## v0.3.1 - 2026-11-09
+
+- `distill-eval.py` uses the nightly distiller's prompt, input and validation, so the eval
+  measures what runs at night. Ollama runs send at most 60 000 characters per chat (32k-token
+  context); `distill.py` reads `~/.memohub/ollama.url` like the eval.
+
 ## v0.3.0 - 2026-11-09
 
 Migration `20261112120000_distill_similar.sql`: deploy with `--migrate`.
