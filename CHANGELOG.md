@@ -6,6 +6,15 @@ change both databases.
 
 ## Unreleased
 
+## v0.3.0 - 2026-11-09
+
+Migration `20261112120000_distill_similar.sql`: deploy with `--migrate`.
+
+- Distiller: chats in a code repository yield notes only about what the repository does not
+  record (plans, open problems, unbuilt or deferred work, rejected options, agreements). A
+  candidate whose topic already has a newer note, in either database, is not proposed.
+  Migration `20261112120000_distill_similar.sql`.
+
 ## v0.2.1 - 2026-11-09
 
 - Distiller: a note without a project gets the project whose name or alias matches the chat's

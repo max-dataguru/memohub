@@ -301,5 +301,8 @@ Every function here is owner-only; clients see only the candidates it creates.
 - **Failures:** a chat that fails three times is marked failed; three failed runs in a row set
   `distill.paused`. `_distill_resume(retry_failed)` clears both. `health()` has a `distill`
   section: on or paused, the last run, candidates waiting, failed chats, list price over 30 days.
+- **Duplicates:** `_distill_similar(space, title)` finds active notes with a similar title (the
+  same test as `save()`). A candidate whose topic has a note saved after the chat ended, in this
+  database or the shared one, is not proposed.
 - **Runs:** `distill_runs` keeps the model, chats, candidates, cost and error of each run; one
   run at a time.
