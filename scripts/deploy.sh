@@ -16,6 +16,7 @@ SRC="$(cd "$(dirname "$0")/.." && pwd)"   # working copy: holds the local Supaba
 APP="${MEMOHUB_APP:-$HOME/.memohub/app}"
 URL="$(git -C "$SRC" remote get-url origin)"
 started="$(date '+%Y-%m-%d %H:%M:%S')"
+err_before="$(wc -c < "$HOME/.memohub/capture.err" 2>/dev/null || echo 0)"
 
 echo "== checkout $TAG -> $APP"
 prev=none
@@ -68,8 +69,15 @@ if [ -f "$HOME/.memohub/capture.conf" ]; then
     [[ "${last:0:19}" > "$started" || "${last:0:19}" == "$started" ]] && break
     sleep 2
   done
-  if [[ "${last:0:19}" < "$started" ]]; then echo "no scan since $started; see ~/.memohub/capture.err"; status=1
-  else echo "ok    capture: ${last:20}"; fi
+  # A run that was still going when the job restarted holds the lock, so the restarted job exits
+  # without a scan. A scan in the last 11 minutes (the job runs every 10) and no new errors count
+  # as healthy; the next scheduled run uses the new release.
+  recent="$(date -v-11M '+%Y-%m-%d %H:%M:%S')"
+  err_now="$(wc -c < "$HOME/.memohub/capture.err" 2>/dev/null || echo 0)"
+  if [[ "${last:0:19}" > "$started" || "${last:0:19}" == "$started" ]]; then echo "ok    capture: ${last:20}"
+  elif [[ "${last:0:19}" > "$recent" && "$err_now" -le "$err_before" ]]; then
+    echo "ok    capture: last scan ${last:11:8}, before the restart; the next run uses $TAG"
+  else echo "no scan since $recent; see ~/.memohub/capture.err"; status=1; fi
 fi
 [ $status = 0 ] && echo "deployed $TAG (was $prev)" || echo "deployed $TAG with problems (was $prev)"
 exit $status

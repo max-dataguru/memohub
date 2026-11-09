@@ -6,6 +6,9 @@ change both databases.
 
 ## Unreleased
 
+- `deploy.sh` accepts a capture scan from the last 11 minutes when the restarted job found the
+  previous run still holding its lock, as long as no new errors were logged.
+
 ## v0.3.1 - 2026-11-09
 
 - `distill-eval.py` uses the nightly distiller's prompt, input and validation, so the eval
