@@ -6,6 +6,10 @@ change both databases.
 
 ## Unreleased
 
+## v0.2.0 - 2026-11-09
+
+Migration `20261111120000_distill.sql`: deploy with `--migrate`.
+
 - Distiller: `scripts/distill.py` and `install-distill.sh` propose candidates from finished
   chats nightly, with a local Ollama model or headless Claude Code. Off until a source is
   allowed. Migration `20261111120000_distill.sql` (cursors, runs, pause, `health().distill`).
