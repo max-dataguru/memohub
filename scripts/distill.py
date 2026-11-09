@@ -21,13 +21,15 @@ Models (MODEL in the config):
                        no saved session, so the journal scanner never sees these runs. Uses the
                        Claude Code login of this Mac; counts against its plan limits.
     ollama:<model>     a local Ollama model, e.g. ollama:qwen3:8b (OLLAMA_URL, default
-                       http://localhost:11434). Weaker on long chats, but nothing leaves the Mac.
+                       ~/.memohub/ollama.url, else http://localhost:11434). Weaker notes, but nothing
+                       leaves the Mac.
 
 Config: ~/.memohub/distill.conf (KEY=VALUE):
     TARGET=private          private | shared: the database whose journal is distilled
     MODEL=ollama:qwen3:8b   default; claude:sonnet gives much better notes (see above)
     MAX_CHATS=10            per run
-    MAX_CHARS=200000        per chat; a longer chat sends only its newest part
+    MAX_CHARS=200000        per chat (default 200000 for Claude, 60000 for Ollama's 32k context);
+                            a longer chat sends only its newest part
 Log: ~/.memohub/distill.log, counts only. Env MEMOHUB_DISTILL_HOME overrides ~/.memohub.
 """
 
@@ -99,8 +101,13 @@ SCHEMA = {
 }
 
 
+def default_max_chars(model):
+    """Characters of transcript per chat: Ollama runs with a 32k-token context."""
+    return 60000 if model.startswith("ollama:") else 200000
+
+
 def load_conf():
-    conf = {"TARGET": "private", "MODEL": "ollama:qwen3:8b", "MAX_CHATS": "10", "MAX_CHARS": "200000"}
+    conf = {"TARGET": "private", "MODEL": "ollama:qwen3:8b", "MAX_CHATS": "10"}
     path = os.path.join(HOME, "distill.conf")
     if os.path.exists(path):
         for line in open(path, encoding="utf-8"):
@@ -112,7 +119,8 @@ def load_conf():
         sys.exit("distill.conf: TARGET must be private|shared")
     if not re.match(r"^(claude|ollama):\S+$", conf["MODEL"]):
         sys.exit("distill.conf: MODEL must be claude:<model> or ollama:<model>")
-    conf["MAX_CHATS"], conf["MAX_CHARS"] = int(conf["MAX_CHATS"]), int(conf["MAX_CHARS"])
+    conf["MAX_CHATS"] = int(conf["MAX_CHATS"])
+    conf["MAX_CHARS"] = int(conf.get("MAX_CHARS") or default_max_chars(conf["MODEL"]))
     return conf
 
 
@@ -186,7 +194,10 @@ def ask_claude(model, system, user):
 
 
 def ask_ollama(model, system, user):
-    base = os.environ.get("OLLAMA_URL", "http://localhost:11434").rstrip("/")
+    base = os.environ.get("OLLAMA_URL")
+    if not base and os.path.exists(os.path.join(HOME, "ollama.url")):
+        base = open(os.path.join(HOME, "ollama.url")).read().strip()
+    base = (base or "http://localhost:11434").rstrip("/")
     body = {"model": model, "stream": False, "think": False, "format": SCHEMA,
             "options": {"num_ctx": 32768, "temperature": 0.2, "num_predict": 3000, "repeat_penalty": 1.1},
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}]}
