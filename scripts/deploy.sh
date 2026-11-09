@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deploy a release tag locally. The launchd jobs (capture, backup, health) run from a separate
+# Deploy a release tag locally. The launchd jobs (capture, backup, health, distill) run from a separate
 # checkout at the tag, never from the working copy.
 #   scripts/deploy.sh vX.Y.Z              deploy; stops if the tag has unapplied migrations
 #   scripts/deploy.sh vX.Y.Z --migrate    also apply pending migrations to both databases
@@ -51,10 +51,11 @@ hour() { /usr/libexec/PlistBuddy -c "Print :StartCalendarInterval:Hour" "$LA/$1.
 [ -f "$HOME/.memohub/capture.conf" ] && "$APP/scripts/install-capture.sh"
 [ -f "$LA/com.memohub.backup.plist" ] && "$APP/scripts/install-mac-backup.sh" "$(hour com.memohub.backup 13)"
 [ -f "$LA/com.memohub.health.plist" ] && "$APP/scripts/install-health.sh" "$(hour com.memohub.health 10)"
+[ -f "$LA/com.memohub.distill.plist" ] && "$APP/scripts/install-distill.sh" "$(hour com.memohub.distill 4)"
 
 echo "== verify"
 status=0
-for l in com.memohub.capture com.memohub.backup com.memohub.health; do
+for l in com.memohub.capture com.memohub.backup com.memohub.health com.memohub.distill; do
   [ -f "$LA/$l.plist" ] || continue
   if ! launchctl print "gui/$(id -u)/$l" >/dev/null 2>&1; then echo "NOT loaded $l"; status=1
   elif grep -q "$APP/" "$LA/$l.plist"; then echo "ok    $l"

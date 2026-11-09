@@ -45,6 +45,8 @@ q="select string_agg(t || '=' || n, ' ' order by t) from (
   union all select 'memory_candidates', count(*) from memohub.memory_candidates
   union all select 'candidates_proposed', count(*) from memohub.memory_candidates where status = 'proposed'
   union all select 'candidate_sources', count(*) from memohub.candidate_sources
+  union all select 'distill_runs', count(*) from memohub.distill_runs
+  union all select 'distill_progress', count(*) from memohub.distill_progress
   union all select 'candidates_md5', ('x' || left(md5(coalesce(string_agg(to_jsonb(m)::text, '|' order by m.id), '')), 7))::bit(28)::int
     from memohub.memory_candidates m) s"
 a="$(docker exec "$A" psql -U postgres -tA -c "$q")"; b="$(docker exec "$B" psql -U postgres -tA -c "$q")"

@@ -22,6 +22,8 @@ select json_build_object(
     'capture_sources', (select coalesce(json_agg(t order by t.source, t.device), '[]') from memohub.capture_sources t),
     'captures', (select coalesce(json_agg(to_jsonb(t) - 'fts' order by t.event_at, t.id), '[]') from memohub.captures t),
     'memory_candidates', (select coalesce(json_agg(t order by t.created_at, t.id), '[]') from memohub.memory_candidates t),
-    'candidate_sources', (select coalesce(json_agg(t order by t.candidate_id, t.capture_id), '[]') from memohub.candidate_sources t)
+    'candidate_sources', (select coalesce(json_agg(t order by t.candidate_id, t.capture_id), '[]') from memohub.candidate_sources t),
+    'distill_runs', (select coalesce(json_agg(t order by t.started_at, t.id), '[]') from memohub.distill_runs t),
+    'distill_progress', (select coalesce(json_agg(t order by t.chat_ref), '[]') from memohub.distill_progress t)
   )
 );

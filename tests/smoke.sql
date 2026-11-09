@@ -786,6 +786,93 @@ begin
   assert not has_function_privilege('anon', 'memohub._propose(uuid, jsonb, uuid[], int)', 'execute');
 end $$;
 
+-- A4: the distiller's database side. Nothing runs until distill.allow lists a source; cursors
+-- move only after a recorded answer; failures mark chats and pause the distiller.
+do $$
+declare
+  r jsonb; run uuid; m1 uuid; m2 uuid; m3 uuid; i int;
+begin
+  r := memohub._distill_begin('claude:sonnet');
+  assert r->>'error' = 'not_enabled', r::text;
+  assert memohub._distill_allow('[{"source": "nope"}]')->>'error' = 'bad_allow';
+  assert memohub._distill_allow('[{"source": "codex", "extra": 1}]')->>'error' = 'bad_allow';
+  r := memohub._distill_allow('[{"source": "claude-code", "project": "memohub"}]');
+  assert (r->>'ok')::boolean and r->'allow'->0->>'project' = 'memohub', r::text;
+
+  perform memohub.capture_batch(jsonb_build_object('device', 'home-mac', 'items', jsonb_build_array(
+    jsonb_build_object('source', 'claude-code', 'chat_ref', 'cc-dist1', 'project_hint', 'memohub', 'role', 'user',
+                       'event_at', now() - interval '5 hours', 'key', 'dist-1', 'content', 'Решили запускать дистилляцию ночью'),
+    jsonb_build_object('source', 'claude-code', 'chat_ref', 'cc-dist1', 'project_hint', 'memohub', 'role', 'assistant',
+                       'event_at', now() - interval '5 hours' + interval '1 minute', 'key', 'dist-2', 'content', 'Да, раз в сутки'),
+    jsonb_build_object('source', 'claude-code', 'chat_ref', 'cc-dist2', 'role', 'user',
+                       'event_at', now() - interval '10 minutes', 'key', 'dist-3', 'content', 'Ещё идёт'),
+    jsonb_build_object('source', 'codex', 'chat_ref', 'codex-dist3', 'role', 'user',
+                       'event_at', now() - interval '5 hours', 'key', 'dist-4', 'content', 'Не разрешён'))));
+  select id into m1 from memohub.captures where idempotency_key = 'dist-1';
+  select id into m2 from memohub.captures where idempotency_key = 'dist-2';
+
+  r := memohub._distill_begin('claude:sonnet');
+  assert (r->>'ok')::boolean, r::text;
+  run := (r->>'run')::uuid;
+  assert memohub._distill_begin('claude:sonnet')->>'error' = 'busy';
+
+  -- Only allowed, quiet chats; the open chat and the codex chat wait.
+  r := memohub._distill_pending(10);
+  assert jsonb_array_length(r) = 1 and r->0->>'chat_ref' = 'cc-dist1' and r->0->>'project_hint' = 'memohub', r::text;
+  r := memohub._distill_chat('cc-dist1');
+  assert jsonb_array_length(r->'messages') = 2 and r->'messages'->0->>'id' = m1::text, r::text;
+
+  -- Sent ids must belong to the chat.
+  r := memohub._distill_record(run, 'cc-dist1', array[m1, (select id from memohub.captures where idempotency_key = 'dist-4')]);
+  assert r->>'error' = 'bad_sent', r::text;
+  r := memohub._distill_record(run, 'cc-dist1', array[m1, m2], jsonb_build_array(
+         jsonb_build_object('confidence', 0.7, 'payload', jsonb_build_object('space', 'work', 'title', 'Дистилляция ночью'),
+                            'capture_ids', jsonb_build_array(m1, m2)),
+         jsonb_build_object('payload', jsonb_build_object('space', 'work', 'title', 'Повтор'),
+                            'capture_ids', jsonb_build_array(m2, m1))), 0.12);
+  assert jsonb_array_length(r->'proposed') = 1 and r->'refused'->>0 = 'already_proposed', r::text;
+  assert (select model from memohub.memory_candidates where id = (r->'proposed'->>0)::uuid) = 'claude:sonnet';
+  assert memohub._distill_pending(10) = '[]'::jsonb;
+
+  -- A later message reopens the chat, and only the new part is sent.
+  perform memohub.capture_batch(jsonb_build_object('device', 'home-mac', 'items', jsonb_build_array(
+    jsonb_build_object('source', 'claude-code', 'chat_ref', 'cc-dist1', 'role', 'user',
+                       'event_at', now() - interval '4 hours', 'key', 'dist-5', 'content', 'И ещё одно'))));
+  select id into m3 from memohub.captures where idempotency_key = 'dist-5';
+  r := memohub._distill_chat('cc-dist1');
+  assert jsonb_array_length(r->'messages') = 1 and r->'messages'->0->>'id' = m3::text, r::text;
+
+  -- Three failures mark the chat failed; it is skipped and reported.
+  for i in 1..3 loop
+    r := memohub._distill_fail(run, 'cc-dist1', 'bad answer');
+  end loop;
+  assert (r->>'failed')::boolean, r::text;
+  assert memohub._distill_pending(10) = '[]'::jsonb;
+
+  r := memohub._distill_finish(run);
+  assert (r->>'ok')::boolean and not (r->>'paused')::boolean, r::text;
+  r := memohub.health()->'distill';
+  assert (r->>'enabled')::boolean and r->'last_run'->>'status' = 'done' and (r->'last_run'->>'chats')::int = 1
+         and (r->>'failed_chats')::int = 1 and (r->>'cost_30d_usd')::numeric = 0.12, r::text;
+
+  -- Three failed runs in a row pause it until a person clears the flag.
+  for i in 1..3 loop
+    run := (memohub._distill_begin('claude:sonnet')->>'run')::uuid;
+    r := memohub._distill_finish(run, 'claude: not logged in');
+  end loop;
+  assert (r->>'paused')::boolean, r::text;
+  assert memohub._distill_begin('claude:sonnet')->>'error' = 'paused';
+
+  assert not has_function_privilege('authenticated', 'memohub._distill_record(uuid, text, uuid[], jsonb, numeric)', 'execute');
+  assert not has_function_privilege('anon', 'memohub._distill_chat(text, int)', 'execute');
+  assert not has_function_privilege('authenticated', 'memohub._distill_allow(jsonb)', 'execute');
+  r := memohub._distill_resume(true);
+  assert (r->>'retried_chats')::int = 1 and (memohub._distill_begin('claude:sonnet')->>'ok')::boolean, r::text;
+  assert memohub._distill_pending(10)->0->>'chat_ref' = 'cc-dist1';
+  perform memohub._distill_finish(r2.id) from memohub.distill_runs r2 where r2.status = 'running';
+  perform memohub._distill_allow('[]');
+end $$;
+
 -- Leave one proposed candidate for the backup roundtrip.
 select memohub._propose(null, jsonb_build_object('payload', jsonb_build_object('space', 'learning', 'title', 'Кандидат для бэкапа'),
          'capture_ids', jsonb_build_array(c.id)), array[c.id])

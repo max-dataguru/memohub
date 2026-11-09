@@ -36,7 +36,7 @@ Only the database is required. Everything else can be turned on separately.
 | Semantic search (embeddings) | Ollama | search by meaning on top of search by words | ready |
 | Meeting recording | Mac, separate `meeting` plugin | transcript and summary; the transcript goes into the journal | ready |
 | Note candidates | database | automation proposals waiting for your approval | ready |
-| Distillation | Mac, Ollama | automation proposes candidates from the journal | in progress |
+| Distillation (`distill.py`) | Mac, Claude Code or Ollama | nightly: proposes candidates from finished chats | ready, off by default |
 
 ## Where it runs
 
@@ -198,11 +198,24 @@ covers setup. Transcripts land in
 `~/Documents/Meetings`, and the journal picks them up (the `meeting` source in `capture.conf`).
 On first run macOS asks for access to Documents.
 
-**Distillation (in progress).** A script on the Mac will take journal messages, pick by rules the
-ones that contain decisions and plans, and ask a model to propose notes: by default a local
-`qwen3` in Ollama, or any OpenAI-compatible API with your own key. Proposals become candidates and turn into notes only after you approve them in any client ("show
-candidates"). Only sources you allow in `distill.allow` are read. Quality is measured on 20
-labelled chats before it is switched on.
+**Distillation.** `scripts/distill.py` runs nightly, takes chats that have been quiet for two
+hours and asks a model for notes worth keeping. Proposals become candidates and turn into notes
+only after you approve them in any client ("show candidates"). The part of a chat you already
+saved with tomemo is skipped. Nothing is read until you allow a source:
+
+```bash
+scripts/distill.py allow claude-code            # or: allow claude-code <project folder>
+scripts/install-distill.sh                      # nightly at 04:00
+```
+
+The model is set in `~/.memohub/distill.conf`. The default is a local `qwen3:8b` in Ollama, which
+keeps everything on the Mac but writes weak notes on long chats. `MODEL=claude:sonnet` runs
+headless Claude Code (`claude -p`, no tools, no saved session) on your Claude login: much better
+notes, and the chats go to Anthropic, so allow only sources you would send there anyway (Claude
+Code chats already are). It counts against your plan's limits; `MAX_CHATS` (10) caps a run.
+`scripts/distill.py status` shows the last run, candidates waiting and the list price; three
+failed runs in a row pause it until `scripts/distill.py resume`. To compare models on your own
+chats first, use `scripts/distill-eval.py`.
 
 ## Updating
 
