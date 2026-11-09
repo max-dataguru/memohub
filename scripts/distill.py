@@ -62,6 +62,8 @@ SYSTEM = """You read a transcript of a chat between a user and an AI assistant a
 
 Skip routine work: commands, debugging steps, file edits, test runs, anything that only mattered while the chat lasted. Most chats have nothing worth saving; then return an empty list.
 
+A chat that ran in a code repository is partly recorded there already. What was built, merged or released, and what the code, its docs and the assistant's project memory describe (architecture, how a feature works, setup, access, commands, deploy procedures), is not worth a note. What did not reach the repository is: work plans and next steps, problems and challenges still open, ideas and changes that were discussed but not built, deferred or not started, options rejected with the reason, decisions waiting for someone's answer, agreements with people. If everything in the chat was built and documented, return an empty list.
+
 One note per topic, with every decision on that topic in it; never split a topic across notes or repeat a point in two notes. Most chats have one topic. At most {max} notes. Notes already saved from this chat are listed; do not propose them again.
 
 Each note:
@@ -295,6 +297,30 @@ def to_candidates(notes, tail, catalog, hint=None):
     return out, dropped
 
 
+def covered(conf, cands, chat_end):
+    """Drop candidates whose topic already has a note saved after the chat's last message, in
+    this database or the shared one: that note covers it. Older similar notes are left for the
+    person: approval through save() offers to amend them."""
+    targets = [conf["TARGET"]] + (["shared"] if conf["TARGET"] == "private" else [])
+    keep = []
+    for c in cands:
+        newer = False
+        for t in targets:
+            try:
+                found = call(dict(conf, TARGET=t), "_distill_similar", c["payload"]["space"], c["payload"]["title"])
+            except Exception as e:  # noqa: BLE001 - without the check the person still sees similar_exists
+                if t == conf["TARGET"]:
+                    raise
+                log("shared similarity check failed: %s" % str(e)[:120])
+                continue
+            if any(datetime.fromisoformat(n["created_at"]) >= chat_end for n in found):
+                newer = True
+                break
+        if not newer:
+            keep.append(c)
+    return keep
+
+
 def distill_chat(conf, run, pending, catalog):
     chat = call(conf, "_distill_chat", pending["chat_ref"])
     sent = [m["id"] for m in chat["messages"]]
@@ -310,6 +336,7 @@ def distill_chat(conf, run, pending, catalog):
     try:
         notes, cost = ask(conf, SYSTEM.format(max=MAX_NOTES), user)
         cands, dropped = to_candidates(notes, tail, catalog, pending.get("project_hint"))
+        cands = covered(conf, cands, max(datetime.fromisoformat(m["event_at"]) for m in tail))
     except Exception as e:  # noqa: BLE001 - recorded per chat; three in a row mark it failed
         call(conf, "_distill_fail", run, pending["chat_ref"], str(e)[:300], cost)
         raise

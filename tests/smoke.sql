@@ -866,6 +866,12 @@ begin
   assert not has_function_privilege('authenticated', 'memohub._distill_record(uuid, text, uuid[], jsonb, numeric)', 'execute');
   assert not has_function_privilege('anon', 'memohub._distill_chat(text, int)', 'execute');
   assert not has_function_privilege('authenticated', 'memohub._distill_allow(jsonb)', 'execute');
+  -- Similar titles from other chats, same space, same threshold as save().
+  perform memohub.save('{"space":"travel","title":"Шотландия осенью: маршрут и брони","source":"claude-code","new_topic":true}');
+  r := memohub._distill_similar('travel', 'Шотландия осенью: брони и маршрут, логистика');
+  assert jsonb_array_length(r) = 1 and (r->0->>'similarity')::numeric >= 0.45, r::text;
+  assert memohub._distill_similar('work', 'Шотландия осенью: брони и маршрут, логистика') = '[]'::jsonb;
+  assert not has_function_privilege('authenticated', 'memohub._distill_similar(text, text)', 'execute');
   r := memohub._distill_resume(true);
   assert (r->>'retried_chats')::int = 1 and (memohub._distill_begin('claude:sonnet')->>'ok')::boolean, r::text;
   assert memohub._distill_pending(10)->0->>'chat_ref' = 'cc-dist1';
