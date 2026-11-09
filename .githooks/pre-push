@@ -5,8 +5,9 @@ guard="$(git rev-parse --show-toplevel)/scripts/guard.sh"
 zero=0000000000000000000000000000000000000000
 while read -r _lref lsha _rref rsha; do
   [ "$lsha" = "$zero" ] && continue                       # branch deletion
-  if [ "$rsha" = "$zero" ]; then range="$lsha --not --remotes"
-  else range="$rsha..$lsha"; fi
+  # Commits already on any remote (for example merges made on GitHub) were checked or published
+  # before; checking them again would block every push that brings them along.
+  range="$lsha --not --remotes"
   # shellcheck disable=SC2086
   [ -z "$(git rev-list $range | head -1)" ] && continue
   "$guard" $range

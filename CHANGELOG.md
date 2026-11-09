@@ -6,6 +6,9 @@ change both databases.
 
 ## Unreleased
 
+- The pre-push guard skips commits that are already on the remote.
+- `scripts/distill-eval.py`: offline evaluation of note distillation with a local Ollama model or
+  headless Claude Code; nothing is written to the databases.
 - Logo (`docs/assets/logo.svg`) in the README and a social preview image.
 - Docs, client texts, comments and eval data describe devices and the backup host in generic
   terms (plugin 1.12.1, Codex plugin 1.0.7).
