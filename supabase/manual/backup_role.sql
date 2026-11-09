@@ -25,3 +25,5 @@ create policy backup_read on memohub.suppressed_chats for select to memohub_back
 create policy backup_read on memohub.capture_sources for select to memohub_backup using (true);
 create policy backup_read on memohub.memory_candidates for select to memohub_backup using (true);
 create policy backup_read on memohub.candidate_sources for select to memohub_backup using (true);
+create policy backup_read on memohub.distill_runs for select to memohub_backup using (true);
+create policy backup_read on memohub.distill_progress for select to memohub_backup using (true);

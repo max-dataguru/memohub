@@ -71,8 +71,8 @@ with direct SQL.
   `captures_by_chat(chat_ref)` for context. Mark the answer "from the journal, not confirmed".
   Forget a chat only on request: `forget_chat(chat_ref)` → show → `forget_chat(chat_ref, true)`.
 - "How is memory doing / is everything being collected?": `health()` in each connected database;
-  briefly: what needs attention (source errors and silence, storage usage) and how much was saved
-  this week.
+  briefly: what needs attention (source errors and silence, storage usage, a paused distiller or
+  chats it failed on), how much was saved this week and how many candidates wait for review.
 
 ## Saving: on "tomemo" (or «запомни итог», «в память», "remember this")
 1. Choose the database (see "Databases") and call `catalog()`.

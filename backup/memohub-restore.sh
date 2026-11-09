@@ -44,7 +44,7 @@ begin
   -- that was not restored are skipped too. Suppressed chats go before captures for the same reason.
   -- Candidates go after notes and captures and only with what they point at.
   -- Backups made before the journal have no capture tables: those loops restore 0 rows.
-  foreach t in array array['spaces', 'projects', 'config', 'guides', 'forgotten', 'entities', 'notes', 'files', 'note_entities', 'entity_edges', 'note_embeddings', 'suppressed_chats', 'capture_sources', 'captures', 'memory_candidates', 'candidate_sources'] loop
+  foreach t in array array['spaces', 'projects', 'config', 'guides', 'forgotten', 'entities', 'notes', 'files', 'note_entities', 'entity_edges', 'note_embeddings', 'suppressed_chats', 'capture_sources', 'captures', 'memory_candidates', 'candidate_sources', 'distill_runs', 'distill_progress'] loop
     select string_agg(quote_ident(column_name), ', ' order by ordinal_position) into cols
       from information_schema.columns
      where table_schema = 'memohub' and table_name = t and is_generated = 'NEVER';

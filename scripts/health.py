@@ -178,6 +178,21 @@ def build(days):
                     problems.append("%s/%s: %s" % (s["source"], s["device"], s["error"]))
                 if s["source"] != "shortcut" and s["device"] == device and (s.get("quiet_hours") or 0) > 24:
                     problems.append("%s on %s not scanned for %d h" % (s["source"], device, s["quiet_hours"]))
+        d = h.get("distill") or {}
+        if d.get("enabled") or d.get("last_run"):
+            r = d.get("last_run") or {}
+            lines.append("- Distiller: %s; last run %s (%s, %d chats, %d candidates); waiting for review: %d; "
+                         "list price in 30 d: $%.2f." % (
+                             "paused" if d.get("paused") else "on" if d.get("enabled") else "off",
+                             ago(r.get("started_at")), r.get("status", "none"), r.get("chats") or 0,
+                             r.get("candidates") or 0, d.get("proposed") or 0, float(d.get("cost_30d_usd") or 0)))
+            if d.get("paused"):
+                problems.append("%s: distiller paused after 3 failed runs (last error: %s); scripts/distill.py resume"
+                                % (t, r.get("error")))
+            if d.get("failed_chats"):
+                problems.append("%s: %d chats failed to distill 3 times (scripts/distill.py resume --retry-failed)" % (t, d["failed_chats"]))
+            if d.get("enabled") and not launchd_loaded("com.memohub.distill"):
+                problems.append("distiller is on but its job is not loaded (scripts/install-distill.sh)")
         for k in h.get("device_keys", []):
             if k.get("last_used_at") is None:
                 lines.append("- Device key %s has not been used yet." % k["device"])

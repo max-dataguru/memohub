@@ -14,6 +14,7 @@ which of them depend on Supabase, and the convention for adding a feature.
 | Journal scanner | `scripts/capture.py` | Reads Claude Code and Codex transcripts and meeting notes, masks secrets, sends batches to `memohub.capture_batch`. |
 | Backup | `scripts/mac-backup.sh`, `backup/` | Exports both databases as JSON with `psql`, encrypts with `age`, keeps local and optional remote copies. |
 | Health report | `scripts/health.py` | Weekly check that every source still delivers. |
+| Distiller | `scripts/distill.py` | Nightly: proposes notes from finished chats as candidates for you to approve. Off until a source is allowed. |
 | Embeddings | Ollama, `codex-plugin/bin/` | Computed on the client with a local model and stored with `memohub.put_embedding`. Search works without them. |
 | Release | `scripts/deploy.sh`, `scripts/guard.sh` | Deploys a tag to `~/.memohub/app`; the guard checks every commit and push for leaks. |
 
@@ -65,9 +66,11 @@ same convention:
   checkout. `deploy.sh` reinstalls it only if it is already installed.
 - Database writes: only through `memohub.*` functions. Automation proposes notes as
   candidates; a person approves them.
-- Models: an OpenAI-compatible endpoint, local Ollama by default. A hosted API with your own
-  key also works.
+- Models: local Ollama by default. Headless Claude Code (`claude -p`) on a Claude plan, or a
+  hosted API with your own key, are options.
 
 The journal scanner follows most of this: `capture.conf`, state in `~/.memohub/capture/`, a log
 and a launchd job. It does not pause yet; a failed send keeps the spool and retries on the next
-run. Distillation will be the first feature written to this convention from the start.
+run. The distiller follows all of it: `distill.allow` and `distill.paused` in config,
+`distill.conf` and `~/.memohub/distill/`, `distill.log` with counts, a pause after three failed
+runs, `install-distill.sh`, and candidates through `_propose()`.

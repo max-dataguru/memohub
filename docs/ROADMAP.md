@@ -22,9 +22,9 @@
 
 ## Next
 
-1. **Distillation.** Rules select journal chats with decisions and plans; a model proposes
-   candidates (local Ollama by default, or any OpenAI-compatible API with your own key); you
-   approve them. Measured on 20 labelled chats before it is switched on, then enabled per source.
+1. **Distillation: first weeks.** The nightly job is in (`scripts/distill.py`, off by default).
+   Next: run it on Claude Code chats, review the candidates, tune the prompt, then decide on
+   Codex chats and meetings.
 2. **Self-hosted private database.** Run the private database on plain Postgres in Docker; the
    shared one stays on Supabase for phone and web clients.
 

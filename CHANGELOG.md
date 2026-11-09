@@ -6,6 +6,9 @@ change both databases.
 
 ## Unreleased
 
+- Distiller: `scripts/distill.py` and `install-distill.sh` propose candidates from finished
+  chats nightly, with a local Ollama model or headless Claude Code. Off until a source is
+  allowed. Migration `20261111120000_distill.sql` (cursors, runs, pause, `health().distill`).
 - The pre-push guard skips commits that are already on the remote.
 - `scripts/distill-eval.py`: offline evaluation of note distillation with a local Ollama model or
   headless Claude Code; nothing is written to the databases.

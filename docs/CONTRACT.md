@@ -287,3 +287,19 @@ Conclusions from automation (the distiller), not notes. Migration `2026111012000
 - **Deletion:** `forget(note)` removes candidates that amend it or produced it; `forget_chat` and
   `#nomemo` remove candidates from that chat (accepted notes stay).
 - Search does not see candidates.
+
+## Distiller
+
+The job that proposes candidates (`scripts/distill.py`, migration `20261111120000_distill.sql`).
+Every function here is owner-only; clients see only the candidates it creates.
+
+- **Off until allowed:** `config.distill.allow` lists `{source, project}` (exact `project_hint`
+  or null for any); it is empty by default. `_distill_allow(value)` reads or replaces it.
+- **What is read:** chats quiet for two hours, not suppressed, with messages after the chat's
+  cursor (`distill_progress`). The journal is never changed; the cursor moves only when a reply is
+  recorded (`_distill_record`), which proposes each note through `_propose()`.
+- **Failures:** a chat that fails three times is marked failed; three failed runs in a row set
+  `distill.paused`. `_distill_resume(retry_failed)` clears both. `health()` has a `distill`
+  section: on or paused, the last run, candidates waiting, failed chats, list price over 30 days.
+- **Runs:** `distill_runs` keeps the model, chats, candidates, cost and error of each run; one
+  run at a time.
