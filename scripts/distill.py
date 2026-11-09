@@ -204,6 +204,37 @@ def ask(conf, system, user):
 
 # ---------------------------------------------------------------- one chat
 
+def norm(name):
+    return re.sub(r"[\s_]+", "-", (name or "").strip().lower())
+
+
+def load_catalog(conf):
+    """Spaces with their projects from this database and, from the private one, the shared one
+    too: work projects live in the shared catalog, and a work candidate is saved there."""
+    spaces = {}
+    targets = [conf["TARGET"]] + (["shared"] if conf["TARGET"] == "private" else [])
+    for t in targets:
+        try:
+            cat = call(dict(conf, TARGET=t), "catalog")
+        except Exception as e:  # noqa: BLE001 - the shared catalog only adds project names
+            if t == conf["TARGET"]:
+                raise
+            log("shared catalog not read: %s" % str(e)[:120])
+            continue
+        for sp in cat.get("spaces") or []:
+            projects = spaces.setdefault(sp["slug"], {})
+            for p in sp.get("projects") or []:
+                projects.setdefault(p["slug"], {norm(p["slug"])} | {norm(a) for a in p.get("aliases") or []})
+    return spaces
+
+
+def project_of(hint, spaces):
+    """(space, project) whose slug or alias is the chat's folder name, if exactly one matches."""
+    h = norm(hint)
+    found = [(sp, slug) for sp, projects in spaces.items() for slug, names in projects.items() if h and h in names]
+    return found[0] if len(found) == 1 else None
+
+
 def build_input(chat, pending, catalog, max_chars):
     """Numbered transcript after the last save request, and the capture ids it covers."""
     msgs = chat["messages"]
@@ -223,20 +254,25 @@ def build_input(chat, pending, catalog, max_chars):
         lines.append(line)
         total += len(line)
     lines.reverse()
-    spaces = [{"space": s["slug"], "projects": [p["slug"] for p in s.get("projects") or []]}
-              for s in catalog.get("spaces") or []]
+    spaces = [{"space": sp, "projects": sorted(projects)} for sp, projects in sorted(catalog.items())]
+    match = project_of(pending.get("project_hint"), catalog)
+    folder = pending.get("project_hint") or "none"
+    if match:
+        folder += " (project %s in space %s)" % (match[1], match[0])
     user = ("Source: %s. Project folder: %s.\n\nCatalog (space -> projects):\n%s\n\n"
             "Notes already saved from this chat:\n%s\n\n<transcript>\n%s\n</transcript>") % (
-        pending["source"], pending.get("project_hint") or "none",
+        pending["source"], folder,
         json.dumps(spaces, ensure_ascii=False),
         "\n".join("- " + t for t in chat.get("saved_titles") or []) or "none",
         "\n\n".join(lines))
     return tail, total, user
 
 
-def to_candidates(notes, tail, catalog):
-    """Validate the model's notes and turn them into _propose() input."""
-    spaces = {s["slug"]: {p["slug"] for p in s.get("projects") or []} for s in catalog.get("spaces") or []}
+def to_candidates(notes, tail, catalog, hint=None):
+    """Validate the model's notes and turn them into _propose() input. A note without a valid
+    project gets the project of the chat's folder when it is in the same space."""
+    spaces = catalog
+    match = project_of(hint, catalog)
     out, dropped = [], 0
     for note in notes[:MAX_NOTES]:
         space, project = note.get("space"), note.get("project")
@@ -252,6 +288,8 @@ def to_candidates(notes, tail, catalog):
                    "open_questions": note.get("open_questions") or []}
         if project in spaces[space]:
             payload["project"] = project
+        elif match and match[0] == space:
+            payload["project"] = match[1]
         out.append({"kind": "new", "confidence": note.get("confidence"), "payload": payload,
                     "capture_ids": sorted(set(ids))})
     return out, dropped
@@ -271,7 +309,7 @@ def distill_chat(conf, run, pending, catalog):
     cost = 0.0
     try:
         notes, cost = ask(conf, SYSTEM.format(max=MAX_NOTES), user)
-        cands, dropped = to_candidates(notes, tail, catalog)
+        cands, dropped = to_candidates(notes, tail, catalog, pending.get("project_hint"))
     except Exception as e:  # noqa: BLE001 - recorded per chat; three in a row mark it failed
         call(conf, "_distill_fail", run, pending["chat_ref"], str(e)[:300], cost)
         raise
@@ -300,7 +338,7 @@ def cmd_run(conf):
     cost = 0.0
     error = None
     try:
-        catalog = call(conf, "catalog")
+        catalog = load_catalog(conf)
         pending = call(conf, "_distill_pending", conf["MAX_CHATS"])
         for p in pending:
             try:

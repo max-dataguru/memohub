@@ -6,6 +6,11 @@ change both databases.
 
 ## Unreleased
 
+## v0.2.1 - 2026-11-09
+
+- Distiller: a note without a project gets the project whose name or alias matches the chat's
+  folder; the private run also reads the shared catalog, where work projects live.
+
 ## v0.2.0 - 2026-11-09
 
 Migration `20261111120000_distill.sql`: deploy with `--migrate`.
