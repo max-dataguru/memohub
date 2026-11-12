@@ -6,6 +6,7 @@ change both databases.
 
 ## Unreleased
 
+- CI runs once per change: on pull requests, and on pushes to `main` and release tags.
 ## v0.3.2 - 2026-11-12
 
 - Distiller and health report: timestamps with fewer than 6 fraction digits no longer fail on the
