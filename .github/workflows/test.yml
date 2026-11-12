@@ -1,6 +1,9 @@
 name: tests
+# Branches are tested through their pull request; push runs only for main and release tags.
 on:
   push:
+    branches: [main]
+    tags: ["v*"]
   pull_request:
 jobs:
   test:
