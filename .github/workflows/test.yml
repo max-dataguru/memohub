@@ -28,5 +28,8 @@ jobs:
         run: tests/backup-roundtrip.sh
       - name: Search and dedup eval
         run: tests/run-eval.sh
-      - name: Capture scanner
-        run: python3 -I tests/capture_test.py
+      # The Mac jobs run the system python3 (3.9): test the Python scripts on it.
+      - name: Capture scanner and distiller on Python 3.9
+        run: |
+          docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp -v "$PWD:/w" -w /w python:3.9-slim \
+            sh -c 'python -I tests/capture_test.py && python -I tests/distill_test.py'

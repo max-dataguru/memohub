@@ -56,10 +56,19 @@ def query(target, sql):
     return json.loads(v) if isinstance(v, str) else v
 
 
+def parse_ts(value):
+    """Postgres timestamps as datetimes. Python 3.9 (the system python3 that launchd runs)
+    accepts only 3 or 6 fraction digits, and Postgres drops trailing zeros (.92)."""
+    m = re.match(r"^(.*?)(?:\.(\d+))?(Z|[+-]\d\d(?::?\d\d)?)?$", value.strip())
+    zone = (m.group(3) or "+00:00").replace("Z", "+00:00")
+    zone = zone[:3] + ":" + (zone[3:].lstrip(":") or "00")
+    return datetime.fromisoformat("%s.%s%s" % (m.group(1), (m.group(2) or "0").ljust(6, "0")[:6], zone))
+
+
 def ago(ts):
     if not ts:
         return "never"
-    t = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+    t = parse_ts(ts)
     h = (datetime.now(timezone.utc) - t).total_seconds() / 3600
     if h < 1:
         return "just now"
@@ -71,7 +80,7 @@ def ago(ts):
 def hours_since(ts):
     if not ts:
         return None
-    t = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+    t = parse_ts(ts)
     return (datetime.now(timezone.utc) - t).total_seconds() / 3600
 
 
