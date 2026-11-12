@@ -29,10 +29,7 @@ jobs:
       - name: Search and dedup eval
         run: tests/run-eval.sh
       # The Mac jobs run the system python3 (3.9): test the Python scripts on it.
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.9"
-      - name: Capture scanner
-        run: python -I tests/capture_test.py
-      - name: Distiller
-        run: python -I tests/distill_test.py
+      - name: Capture scanner and distiller on Python 3.9
+        run: |
+          docker run --rm -v "$PWD:/w" -w /w python:3.9-slim \
+            sh -c 'python -I tests/capture_test.py && python -I tests/distill_test.py'
