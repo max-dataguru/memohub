@@ -6,6 +6,11 @@ change both databases.
 
 ## Unreleased
 
+## v0.3.2 - 2026-11-12
+
+- Distiller and health report: timestamps with fewer than 6 fraction digits no longer fail on the
+  system Python 3.9 that launchd runs; since v0.3.0 every distilled chat failed after the model
+  answered. CI now runs the Python tests on 3.9, with a new `tests/distill_test.py`.
 - `deploy.sh` accepts a capture scan from the last 11 minutes when the restarted job found the
   previous run still holding its lock, as long as no new errors were logged.
 

@@ -28,5 +28,11 @@ jobs:
         run: tests/backup-roundtrip.sh
       - name: Search and dedup eval
         run: tests/run-eval.sh
+      # The Mac jobs run the system python3 (3.9): test the Python scripts on it.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
       - name: Capture scanner
-        run: python3 -I tests/capture_test.py
+        run: python -I tests/capture_test.py
+      - name: Distiller
+        run: python -I tests/distill_test.py
